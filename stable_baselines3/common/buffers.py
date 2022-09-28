@@ -476,6 +476,7 @@ class RolloutBuffer(BaseBuffer):
             returns.insert(0, R)
         intermediary_returns = np.array(returns, dtype=np.float32)
         self.returns = intermediary_returns.reshape(len(returns), 1)
+        print("computed")
 
     # R = last_values[0]
 
