@@ -465,7 +465,6 @@ class RolloutBuffer(BaseBuffer):
 
         R = last_values[0]
         returns = []
-        print("computed1")
         for step in reversed(range(self.buffer_size)):
             if step == self.buffer_size - 1:
                 next_non_terminal = 1.0 - dones
