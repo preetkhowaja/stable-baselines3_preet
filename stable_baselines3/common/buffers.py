@@ -1,3 +1,4 @@
+from math import gamma
 import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generator, List, Optional, Union
@@ -390,20 +391,75 @@ class RolloutBuffer(BaseBuffer):
         # Convert to numpy
         last_values = last_values.clone().cpu().numpy().flatten()
 
-        last_gae_lam = 0
+        # last_gae_lam = 0
+        # for step in reversed(range(self.buffer_size)):
+        #     if step == self.buffer_size - 1:
+        #         next_non_terminal = 1.0 - dones
+        #         next_values = last_values
+        #     else:
+        #         next_non_terminal = 1.0 - self.episode_starts[step + 1]
+        #         next_values = self.values[step + 1]
+        #     delta = self.rewards[step] + self.gamma * next_values * next_non_terminal - self.values[step]
+        #     last_gae_lam = delta + self.gamma * self.gae_lambda * next_non_terminal * last_gae_lam
+        #     self.advantages[step] = last_gae_lam
+        # # TD(lambda) estimator, see Github PR #375 or "Telescoping in TD(lambda)"
+        # # in David Silver Lecture 4: https://www.youtube.com/watch?v=PnHCvfgC_ZA
+        # self.returns = self.advantages + self.values
+
+        R = last_values
+        returns = []
         for step in reversed(range(self.buffer_size)):
             if step == self.buffer_size - 1:
-                next_non_terminal = 1.0 - dones
-                next_values = last_values
+                 next_non_terminal = 1.0 - dones
+                 
             else:
-                next_non_terminal = 1.0 - self.episode_starts[step + 1]
-                next_values = self.values[step + 1]
-            delta = self.rewards[step] + self.gamma * next_values * next_non_terminal - self.values[step]
-            last_gae_lam = delta + self.gamma * self.gae_lambda * next_non_terminal * last_gae_lam
-            self.advantages[step] = last_gae_lam
-        # TD(lambda) estimator, see Github PR #375 or "Telescoping in TD(lambda)"
-        # in David Silver Lecture 4: https://www.youtube.com/watch?v=PnHCvfgC_ZA
-        self.returns = self.advantages + self.values
+                 next_non_terminal = 1.0 - self.episode_starts[step + 1]
+
+            R = self.rewards[step] + self.gamma * R * next_non_terminal
+            returns.insert(0, R)
+        self.returns = returns
+
+# R = last_values[0]
+
+#         returns_lst = []
+
+#         for step in reversed(range(self.buffer_size)):
+
+#             if step == self.buffer_size - 1:
+
+#                 next_non_terminal = 1.0 - dones
+
+#             else:
+
+#                 next_non_terminal = 1.0 - self.episode_starts[step + 1]
+
+#             R = self.rewards[step][0] + self.gamma * next_non_terminal *R
+
+#             returns_lst.insert(0,R)
+
+#         returns_1D = np.array(returns_lst, dtype=np.float32)
+
+#         self.returns = returns_1D.reshape(len(returns_lst),1)R = last_values[0]
+
+#         returns_lst = []
+
+#         for step in reversed(range(self.buffer_size)):
+
+#             if step == self.buffer_size - 1:
+
+#                 next_non_terminal = 1.0 - dones
+
+#             else:
+
+#                 next_non_terminal = 1.0 - self.episode_starts[step + 1]
+
+#             R = self.rewards[step][0] + self.gamma * next_non_terminal *R
+
+#             returns_lst.insert(0,R)
+
+#         returns_1D = np.array(returns_lst, dtype=np.float32)
+
+#         self.returns = returns_1D.reshape(len(returns_lst),1)
 
     def add(
         self,
