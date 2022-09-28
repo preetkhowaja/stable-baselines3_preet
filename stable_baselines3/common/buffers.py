@@ -463,6 +463,7 @@ class RolloutBuffer(BaseBuffer):
         # # in David Silver Lecture 4: https://www.youtube.com/watch?v=PnHCvfgC_ZA
         # self.returns = self.advantages + self.values
 
+        ### This implements n-step advantage
         R = last_values[0]
         returns = []
         for step in reversed(range(self.buffer_size)):
@@ -477,48 +478,6 @@ class RolloutBuffer(BaseBuffer):
 
         intermediary_returns = np.array(returns, dtype=np.float32)
         self.returns = intermediary_returns.reshape(len(returns), 1)
-
-    # R = last_values[0]
-
-    #         returns_lst = []
-
-    #         for step in reversed(range(self.buffer_size)):
-
-    #             if step == self.buffer_size - 1:
-
-    #                 next_non_terminal = 1.0 - dones
-
-    #             else:
-
-    #                 next_non_terminal = 1.0 - self.episode_starts[step + 1]
-
-    #             R = self.rewards[step][0] + self.gamma * next_non_terminal *R
-
-    #             returns_lst.insert(0,R)
-
-    #         returns_1D = np.array(returns_lst, dtype=np.float32)
-
-    #         self.returns = returns_1D.reshape(len(returns_lst),1)R = last_values[0]
-
-    #         returns_lst = []
-
-    #         for step in reversed(range(self.buffer_size)):
-
-    #             if step == self.buffer_size - 1:
-
-    #                 next_non_terminal = 1.0 - dones
-
-    #             else:
-
-    #                 next_non_terminal = 1.0 - self.episode_starts[step + 1]
-
-    #             R = self.rewards[step][0] + self.gamma * next_non_terminal *R
-
-    #             returns_lst.insert(0,R)
-
-    #         returns_1D = np.array(returns_lst, dtype=np.float32)
-
-    #         self.returns = returns_1D.reshape(len(returns_lst),1)
 
     def add(
         self,
