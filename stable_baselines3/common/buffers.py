@@ -465,6 +465,7 @@ class RolloutBuffer(BaseBuffer):
 
         R = last_values
         returns = []
+        print("computed1")
         for step in reversed(range(self.buffer_size)):
             if step == self.buffer_size - 1:
                 next_non_terminal = 1.0 - dones
@@ -475,7 +476,7 @@ class RolloutBuffer(BaseBuffer):
             R = self.rewards[step] + self.gamma * R * next_non_terminal
             returns.insert(0, R)
         intermediary_returns = np.array(returns, dtype=np.float32)
-        print("computed")
+        print("computed2")
         self.returns = intermediary_returns.reshape(len(returns), 1)
 
     # R = last_values[0]
