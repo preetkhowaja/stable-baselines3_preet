@@ -476,7 +476,6 @@ class RolloutBuffer(BaseBuffer):
             R = self.rewards[step] + self.gamma * R * next_non_terminal
             returns.insert(0, R)
         intermediary_returns = np.array(returns, dtype=np.float32)
-        print("computed2")
         self.returns = intermediary_returns.reshape(len(returns), 1)
 
     # R = last_values[0]
